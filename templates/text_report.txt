@@ -1,0 +1,41 @@
+=======================================================================
+                SOLIDITY SECURITY AUDIT REPORT
+=======================================================================
+Generated on: {{ date }}
+
+-----------------------------------------------------------------------
+AUDIT SUMMARY
+-----------------------------------------------------------------------
+Files Analyzed: {{ audit_result.files|length }}
+Vulnerabilities Found: {{ audit_result.vulnerabilities|length }}
+
+Severity Breakdown:
+{% set severity_counts = {'CRITICAL': 0, 'HIGH': 0, 'MEDIUM': 0, 'LOW': 0, 'INFO': 0} %}
+{% for vuln in audit_result.vulnerabilities %}
+    {% if vuln.severity in severity_counts %}
+        {% set _ = severity_counts.update({vuln.severity: severity_counts[vuln.severity] + 1}) %}
+    {% endif %}
+{% endfor %}
+
+{% for severity, count in severity_counts.items() %}
+    {% if count > 0 %}
+- {{ severity }}: {{ count }}
+    {% endif %}
+{% endfor %}
+
+{% if audit_result.vulnerabilities %}
+-----------------------------------------------------------------------
+VULNERABILITIES
+-----------------------------------------------------------------------
+
+{% for vuln in audit_result.vulnerabilities %}
+{{ loop.index }}. {{ vuln.name }} ({{ vuln.severity }})
+-----------------------------------------------------------------------
+Description: {{ vuln.description }}
+CVSS Score: {{ vuln.cvss_score }} ({{ vuln.cvss_vector }})
+
+Locations:
+{% for loc in vuln.locations %}
+- File: {{ loc.file }}
+  Lines: {{ loc.line_start }} - {{ loc.line_end }}
+  Code:

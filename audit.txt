@@ -1,0 +1,2566 @@
+1. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ArithmeticOverflow.sol, contract ArithmeticOverflowVulnerable, function deposit, lines 8-8.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+2. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ArithmeticOverflow.sol, contract ArithmeticOverflowVulnerable, function deposit, lines 9-9.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+3. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\BlockGasLimit.sol, contract BlockGasLimitVulnerable, function bid, lines 17-17.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+4. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\BlockGasLimit.sol, contract BlockGasLimitVulnerable, function bid, lines 11-11.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+5. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\BlockGasLimit.sol, contract BlockGasLimitAttacker, function attack, lines 33-33.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+6. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyVulnerable, function withdraw, lines 20-20.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+7. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyAttacker, function attack, lines 45-45.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+8. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyAttacker, lines 53-53.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+9. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyVulnerable, function transfer, lines 11-11.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+10. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyVulnerable, function withdraw, lines 19-19.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+11. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyVulnerable, function deposit, lines 26-26.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+12. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyAttacker, function attack, lines 41-41.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+13. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyAttacker, lines 52-52.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+14. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyAttacker, lines 53-53.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+15. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyVulnerable, function transfer, lines 14-14.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+16. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyVulnerable, function deposit, lines 27-27.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+17. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\CrossFunctionReentrancy.sol, contract CrossFunctionReentrancyVulnerable, function transfer, lines 13-13.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+18. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ERC721Reentrancy.sol, contract that, function mint, lines 14-14.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+19. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ERC721Reentrancy.sol, contract ERC721ReentrancyAttacker, function attack, lines 34-34.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+20. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ERC721Reentrancy.sol, contract that, function mint, lines 15-15.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+21. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ERC721Reentrancy.sol, contract ERC721ReentrancyAttacker, function attack, lines 36-36.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+22. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ERC721Reentrancy.sol, contract ERC721ReentrancyAttacker, function onERC721Received, lines 43-43.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+23. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ERC721Reentrancy.sol, contract that, function mint, lines 17-17.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+24. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ERC721Reentrancy.sol, contract ERC721ReentrancyAttacker, function attack, lines 35-35.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+25. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ERC721Reentrancy.sol, contract ERC721ReentrancyAttacker, function onERC721Received, lines 42-42.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+26. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ForceSend.sol, contract ForceSendVulnerable, function claimReward, lines 24-24.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+27. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ForceSend.sol, contract ForceSendVulnerable, function deposit, lines 9-9.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+28. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ForceSend.sol, contract ForceSendVulnerable, function claimReward, lines 21-21.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+29. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ForceSend.sol, contract ForceSendAttacker, function attack, lines 38-38.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+30. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, function claimPrize, lines 18-18.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+31. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, function claimPrize, lines 15-15.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+32. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, lines 6-6.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+33. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, lines 8-8.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+34. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, lines 9-9.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+35. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, lines 10-10.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+36. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, lines 13-13.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+37. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, lines 14-14.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+38. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, function claimPrize, lines 15-15.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+39. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\FrontRunning.sol, contract FrontRunningVulnerable, function claimPrize, lines 16-16.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+40. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\InsecureRandomness.sol, contract InsecureRandomnessVulnerable, function guess, lines 11-11.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+41. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\InsecureRandomness.sol, contract InsecureRandomnessVulnerable, function guess, lines 8-8.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+42. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\InsecureRandomness.sol, contract InsecureRandomnessAttacker, function attack, lines 25-25.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+43. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\InsecureRandomness.sol, contract InsecureRandomnessVulnerable, function guess, lines 9-9.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+44. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\InsecureRandomness.sol, contract InsecureRandomnessAttacker, function attack, lines 28-28.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+45. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\InsecureRandomness.sol, contract InsecureRandomnessVulnerable, function guess, lines 9-9.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+46. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\InsecureRandomness.sol, contract InsecureRandomnessAttacker, function attack, lines 28-28.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+47. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationVulnerable, function borrow, lines 27-27.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+48. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationVulnerable, function borrow, lines 34-34.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+49. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationAttacker, function attack, lines 73-73.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+50. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationVulnerable, function borrow, lines 21-21.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+51. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationAttacker, function attack, lines 59-59.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+52. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationVulnerable, function borrow, lines 34-34.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+53. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationAttacker, function attack, lines 61-61.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+54. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationAttacker, function attack, lines 73-73.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+55. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationVulnerable, function borrow, lines 31-31.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+56. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\OracleManipulation.sol, contract OracleManipulationVulnerable, function borrow, lines 27-27.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+57. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\PhishingTxOrigin.sol, contract PhishingTxOriginVulnerable, function transferOwnership, lines 11-11.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+58. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\PhishingTxOrigin.sol, contract PhishingTxOriginAttacker, function winFreeMoney, lines 27-27.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+59. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\PhishingTxOrigin.sol, contract PhishingTxOriginAttacker, function winFreeMoney, lines 28-28.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+60. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\PrivateVariable.sol, contract PasswordManager, function setPassword, lines 11-11.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+61. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\PrivateVariable.sol, contract PasswordManager, lines 9-9.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+62. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\PrivateVariable.sol, contract PasswordManager, function setPassword, lines 11-11.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+63. Front-Running Vulnerability
+• Description: Transaction ordering dependence that can be exploited by miners or other users to gain advantage.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\PrivateVariable.sol, contract PasswordManager, function setPassword, lines 12-12.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Bancor (2018): Front-running vulnerability in their exchange mechanism., EtherDelta (2017): Front-running attacks on decentralized exchanges.
+• Recommended fix: 
+// Vulnerable code
+function claimPrize(string memory password) public {
+    require(keccak256(abi.encodePacked(password)) == passwordHash);
+    msg.sender.transfer(prize);
+}
+
+// Fixed code - Commit-reveal scheme
+// Step 1: User submits hash of (password + user address + random nonce)
+function commitSolution(bytes32 solutionHash) public {
+    require(commitments[msg.sender] == 0, "Already committed");
+    commitments[msg.sender] = solutionHash;
+    commitmentTimes[msg.sender] = block.timestamp;
+}
+
+// Step 2: After reveal period, user reveals solution
+function revealSolution(string memory password, uint256 nonce) public {
+    bytes32 solutionHash = keccak256(abi.encodePacked(password, msg.sender, nonce));
+    require(commitments[msg.sender] == solutionHash, "Invalid solution");
+    require(block.timestamp >= commitmentTimes[msg.sender] + 24 hours, "Too early");
+    require(keccak256(abi.encodePacked(password)) == passwordHash, "Wrong password");
+    
+    msg.sender.transfer(prize);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-114
+  - https://consensys.github.io/smart-contract-best-practices/attacks/frontrunning/
+
+64. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract that, function withdraw, lines 12-12.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+65. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract ReadOnlyReentrancyAttacker, function attack, lines 57-57.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+66. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract that, function withdraw, lines 11-11.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+67. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract that, function deposit, lines 23-23.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+68. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract that, function getReward, lines 37-37.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+69. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract ReadOnlyReentrancyAttacker, function attack, lines 54-54.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+70. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract that, lines 28-28.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+71. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract that, lines 36-36.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+72. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract that, function getReward, lines 40-40.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+73. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract ReadOnlyReentrancyAttacker, function attack, lines 57-57.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+74. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract ReadOnlyReentrancyAttacker, lines 63-63.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+75. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ReadOnlyReentrancy.sol, contract that, function deposit, lines 24-24.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+76. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\Reentrancy.sol, contract ReentrancyVulnerable, function withdraw, lines 10-10.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+77. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\Reentrancy.sol, contract ReentrancyAttacker, function attack, lines 35-35.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+78. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\Reentrancy.sol, contract ReentrancyVulnerable, function withdraw, lines 9-9.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+79. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\Reentrancy.sol, contract ReentrancyVulnerable, function deposit, lines 16-16.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+80. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\Reentrancy.sol, contract ReentrancyAttacker, function attack, lines 31-31.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+81. Integer Overflow and Underflow
+• Description: Arithmetic operations reaching the maximum or minimum size of the type, causing the value to wrap around.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\Reentrancy.sol, contract ReentrancyVulnerable, function deposit, lines 17-17.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Beauty Chain (BEC) Token (2018): Integer overflow bug allowed attackers to generate massive amounts of tokens., PoWHC (2018): Integer overflow in balance calculations led to loss of funds.
+• Recommended fix: 
+// Vulnerable code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    balances[msg.sender] -= amount;
+    balances[to] += amount;
+}
+
+// Fixed code (pre-Solidity 0.8.0)
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    balances[msg.sender] = balances[msg.sender].sub(amount);
+    balances[to] = balances[to].add(amount);
+}
+
+// Fixed code (Solidity 0.8.0+)
+// Overflow/underflow checks are built into the compiler
+function transfer(address to, uint256 amount) public {
+    require(balances[msg.sender] >= amount, "Insufficient balance");
+    unchecked { // Only use unchecked when you're sure overflow/underflow won't happen
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+    }
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-101
+  - https://consensys.github.io/smart-contract-best-practices/attacks/arithmetic/
+
+82. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\RejectEther.sol, contract RejectEtherVulnerable, function bid, lines 17-17.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+83. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\RejectEther.sol, contract RejectEtherVulnerable, function bid, lines 11-11.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+84. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\RejectEther.sol, contract RejectEtherAttacker, function attack, lines 34-34.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+85. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\SignatureReplay.sol, contract SignatureReplayVulnerable, function transfer, lines 21-21.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+86. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\SignatureReplay.sol, contract SignatureReplayVulnerable, function deposit, lines 15-15.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+87. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\SignatureReplay.sol, contract SignatureReplayVulnerable, function transfer, lines 17-17.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+88. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\ZeroCodeSize.sol, contract ZeroCodeSizeVulnerable, function access, lines 15-15.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+89. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function removeLiquidity, lines 76-76.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+90. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function tokenToEthSwap, lines 201-201.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+91. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function removeLiquidity, lines 78-78.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+92. Reentrancy
+• Description: A vulnerability where an external contract call can call back into the calling contract before the first execution is complete.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function ethToToken, lines 154-154.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: The DAO Hack (2016): Attackers exploited a reentrancy vulnerability to drain 3.6M ETH., Uniswap/Lendf.me (2020): Reentrancy attack on ERC-777 tokens led to $25M loss.
+• Recommended fix: 
+// Vulnerable code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+    balances[msg.sender] -= amount;
+}
+
+// Fixed code
+function withdraw(uint256 amount) public {
+    require(balances[msg.sender] >= amount);
+    balances[msg.sender] -= amount;
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success);
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-107
+  - https://consensys.github.io/smart-contract-best-practices/attacks/reentrancy/
+
+93. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function addLiquidity, lines 31-31.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+94. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function removeLiquidity, lines 64-64.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+95. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function ethToTokenTransfer, lines 167-167.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+96. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function ethToTokenSwap, lines 180-180.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+97. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function tokenToEthSwap, lines 192-192.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+98. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function addLiquidity, lines 37-37.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+99. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function addLiquidity, lines 47-47.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+100. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function addLiquidity, lines 53-53.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+101. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, lines 60-60.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+102. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function removeLiquidity, lines 74-74.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+103. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function removeLiquidity, lines 78-78.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+104. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function ethToToken, lines 154-154.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+105. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MinimalDex.sol, contract MinimalDex, function tokenToEthSwap, lines 200-200.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+106. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MockERC20.sol, contract MockERC20, function mint, lines 9-9.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+107. Unprotected Access Control
+• Description: Critical functions that lack proper access controls, allowing unauthorized users to execute them.
+• Location: In C:\Users\ADMINI~1\AppData\Local\Temp\tmppn823b2u\contracts\utils\MockERC20.sol, contract MockERC20, function mint, lines 10-10.
+• Potential impact: This vulnerability could lead to security issues as described in the following historical examples: Parity Multi-Sig Wallet (2017): Lack of access control allowed an attacker to take ownership and freeze $300M worth of ETH., Poly Network Hack (2021): Exploited access control issues to steal $600M across multiple chains.
+• Recommended fix: 
+// Vulnerable code
+function transferOwnership(address newOwner) public {
+    owner = newOwner;
+}
+
+// Fixed code
+function transferOwnership(address newOwner) public {
+    require(msg.sender == owner, "Not authorized");
+    owner = newOwner;
+}
+        
+• References:
+  - https://swcregistry.io/docs/SWC-105
+  - https://consensys.github.io/smart-contract-best-practices/development-recommendations/general/access-control/
+
+THREAT LEVEL: MEDIUM

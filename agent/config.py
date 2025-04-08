@@ -1,26 +1,32 @@
 """
-Configuration management for the AI agent.
+Configuration for the Solidity audit agent.
 """
 import os
-from typing import Dict, Any
-from pydantic_settings import BaseSettings
+from pathlib import Path
+from typing import Optional
 from pydantic import Field
-from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
+
 
 class Settings(BaseSettings):
-    """Application settings loaded from environment variables."""
-    openai_api_key: str = Field(..., env="OPENAI_API_KEY")
-    openai_model: str = Field("o3-mini", env="OPENAI_MODEL")
-    api_base_url: str = Field(..., env="API_BASE_URL")
-    webhook_secret: str = Field(None, env="WEBHOOK_SECRET")
-    log_level: str = Field("INFO", env="LOG_LEVEL")
-    log_file: str = Field("agent.log", env="LOG_FILE")
+    """Application settings."""
+    
+    # OpenAI API settings
+    openai_api_key: str = Field(..., env='OPENAI_API_KEY')
+    openai_model: str = Field('gpt-3.5-turbo', env='OPENAI_MODEL')
+    api_base_url: Optional[str] = Field(None, env='API_BASE_URL')
+    
+    # Server settings
+    webhook_secret: Optional[str] = Field(None, env='WEBHOOK_SECRET')
+    
+    # Logging settings
+    log_level: str = Field('INFO', env='LOG_LEVEL')
+    log_file: str = Field('audit_agent.log', env='LOG_FILE')
+    
+    # Report settings
+    default_report_format: str = Field('text', env='DEFAULT_REPORT_FORMAT')
     
     class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
-def load_config() -> Settings:
-    """Load and return application configuration."""
-    load_dotenv()
-    return Settings() 
+        """Pydantic config."""
+        env_file = '.env'
+        env_file_encoding = 'utf-8'
