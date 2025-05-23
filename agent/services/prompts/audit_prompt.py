@@ -49,4 +49,16 @@ Return your findings in the following JSON format:
 ```solidity
 {contracts}
 ```
+
+## Documentation
+{docs}
+
+## Additional Documentation
+{additional_docs}
+
+## Additional Links
+{additional_links}
+
+## Q&A Information
+{qa_responses}
 """

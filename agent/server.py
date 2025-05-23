@@ -9,9 +9,10 @@ import os
 import zipfile
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Header
 from pydantic import BaseModel
-
+from agent.types import TaskResponse
 from agent.services.auditor import Audit, SolidityAuditor
 from agent.config import Settings
+from typing import Optional
 
 logger = logging.getLogger(__name__)
 app = FastAPI(title="Solidity Audit Agent")
@@ -103,7 +104,7 @@ async def send_audit_results(callback_url: str, task_id: str, audit: Audit):
         # Any other unexpected errors
         logger.error(f"Unexpected error sending audit results: {str(e)}", exc_info=True)
 
-async def fetch_task_details(details_url: str, config: Settings) -> dict:
+async def fetch_task_details(details_url: str, config: Settings) -> TaskResponse:
     """
     Fetch task details including the list of selected files.
     
@@ -112,7 +113,7 @@ async def fetch_task_details(details_url: str, config: Settings) -> dict:
         config: Application configuration
         
     Returns:
-        Dictionary containing task details including selectedFiles
+        TaskResponse object containing task details including selectedFiles
     """
     try:
         async with httpx.AsyncClient() as client:
@@ -121,7 +122,8 @@ async def fetch_task_details(details_url: str, config: Settings) -> dict:
                 headers={"X-API-Key": config.agent4rena_api_key}
             )
             response.raise_for_status()
-            return response.json()
+            task_data = response.json()
+            return TaskResponse(**task_data)
     except Exception as e:
         logger.error(f"Error fetching task details: {str(e)}", exc_info=True)
         return None
@@ -222,14 +224,15 @@ async def process_notification(notification: Notification, config: Settings):
     """
     try:
         logger.info(f"Processing notification for task {notification.task_id}")
+        logger.info(f"Notification: {notification}")
         
         # Fetch task details to get selected files
         task_details = await fetch_task_details(notification.task_details_url, config)
-        if not task_details or 'selectedFiles' not in task_details:
-            logger.error(f"Failed to get selected files for task {notification.task_id}")
+        if not task_details:
+            logger.error(f"Failed to get task details for task {notification.task_id}")
             return
 
-        selected_files = task_details['selectedFiles']
+        selected_files = task_details.selectedFiles or []
         if not selected_files:
             logger.warning(f"No files selected for task {notification.task_id}")
             return
@@ -256,14 +259,21 @@ async def process_notification(notification: Notification, config: Settings):
         logger.info(f"Repository for task {notification.task_id} stored at {repo_storage_path}")
         
         # Read and concatenate selected files
-        concatenated_content = read_and_concatenate_files(repo_storage_path, selected_files)
-        if not concatenated_content:
-            logger.warning(f"No valid file content found for task {notification.task_id}")
+        concatenated_contracts = read_and_concatenate_files(repo_storage_path, selected_files)
+        if not concatenated_contracts:
+            logger.warning(f"No valid contracts content found for task {notification.task_id}")
             return
+        
+        # Read and concatenate selected docs
+        selected_docs = task_details.selectedDocs or []
+        concatenated_docs = read_and_concatenate_files(repo_storage_path, selected_docs)
+        if not concatenated_docs:
+            logger.info(f"No valid docs content found for task {notification.task_id}")
+            # Continue anyway as docs are
         
         # Audit files
         auditor = SolidityAuditor(config.openai_api_key, config.openai_model)
-        audit = auditor.audit_files(concatenated_content)
+        audit = auditor.audit_files(concatenated_contracts, concatenated_docs, task_details.additionalLinks, task_details.additionalDocs, task_details.qaResponses)
         
         # Send results back
         await send_audit_results(notification.post_findings_url, notification.task_id, audit)

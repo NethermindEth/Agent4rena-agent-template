@@ -36,19 +36,52 @@ class SolidityAuditor:
         self.model = model
         self.client = OpenAI(api_key=api_key)
 
-    def audit_files(self, contracts: str) -> Audit:
+    def audit_files(self, contracts: str, docs: str = "", additional_links: List[str] = None, additional_docs: str = None, qa_responses: List = None) -> Audit:
         """
-        Audit a list of Solidity contracts and return structured findings.
+        Audit Solidity contracts and return structured findings.
         
         Args:
-            solidity_files: List of SolidityFile objects to audit
+            contracts: String containing all contract code
+            docs: String containing documentation
+            additional_links: List of additional reference links
+            additional_docs: Additional documentation text
+            qa_responses: List of question-answer pairs
             
         Returns:
-            Dictionary containing the audit findings in a structured format
+            Audit object containing the findings
         """
         try:
-            # Prepare the audit prompt
-            audit_prompt = AUDIT_PROMPT.format(contracts=contracts)
+            # Initialize optional parameters
+            additional_links = additional_links or []
+            qa_responses = qa_responses or []
+            
+            # Format QA pairs for the prompt
+            qa_formatted = ""
+            if qa_responses:
+                qa_formatted = "## Q&A Information\n"
+                for qa in qa_responses:
+                    qa_formatted += f"Q: {qa.question}\nA: {qa.answer}\n\n"
+            
+            # Format additional links
+            links_formatted = ""
+            if additional_links:
+                links_formatted = "## Additional References\n"
+                for link in additional_links:
+                    links_formatted += f"- {link}\n"
+            
+            # Format additional documentation
+            additional_docs_formatted = ""
+            if additional_docs:
+                additional_docs_formatted = f"## Additional Documentation\n{additional_docs}\n"
+            
+            # Prepare the audit prompt with all information
+            audit_prompt = AUDIT_PROMPT.format(
+                contracts=contracts,
+                docs=docs,
+                additional_links=links_formatted,
+                additional_docs=additional_docs_formatted,
+                qa_responses=qa_formatted
+            )
             
             # Send single request to OpenAI
             logger.info("Sending audit request to OpenAI")
