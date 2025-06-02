@@ -2,20 +2,23 @@
 Configuration management for the AI agent.
 """
 import os
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from pydantic_settings import BaseSettings
 from pydantic import Field
 from dotenv import load_dotenv
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
+    # Required fields for local mode
     openai_api_key: str = Field(..., env="OPENAI_API_KEY")
     openai_model: str = Field("o3-mini", env="OPENAI_MODEL")
-    agent_arena_api_key: str = Field(..., env="AGENT_ARENA_API_KEY")
-    webhook_auth_token: str = Field(..., env="WEBHOOK_AUTH_TOKEN")
-    data_dir: str = Field(..., env="DATA_DIR")
     log_level: str = Field("INFO", env="LOG_LEVEL")
     log_file: str = Field("agent.log", env="LOG_FILE")
+    
+    # Additional fields for server mode
+    agentarena_api_key: Optional[str] = Field(None, env="AGENTARENA_API_KEY")
+    webhook_auth_token: Optional[str] = Field(None, env="WEBHOOK_AUTH_TOKEN")
+    data_dir: Optional[str] = Field("./data", env="DATA_DIR")
     
     class Config:
         env_file = ".env"

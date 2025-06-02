@@ -46,7 +46,7 @@ async def fetch_solidity_files(contracts_url: str, config: Settings) -> str:
             # Fetch all contracts at once from the contracts_url
             response = await client.get(
                 contracts_url,
-                headers={"X-API-Key": config.agent_arena_api_key}
+                headers={"X-API-Key": config.agentarena_api_key}
             )
             response.raise_for_status()
             
@@ -83,7 +83,7 @@ async def send_audit_results(callback_url: str, task_id: str, audit: Audit):
                 json=payload,
                 headers={
                     "Content-Type": "application/json",
-                    "X-API-Key": app.state.config.agent_arena_api_key
+                    "X-API-Key": app.state.config.agentarena_api_key
                 }
             )
             # Log response details
@@ -119,7 +119,7 @@ async def fetch_task_details(details_url: str, config: Settings) -> TaskResponse
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 details_url,
-                headers={"X-API-Key": config.agent_arena_api_key}
+                headers={"X-API-Key": config.agentarena_api_key}
             )
             response.raise_for_status()
             task_data = response.json()
@@ -148,7 +148,7 @@ async def download_repository(repo_url: str, config: Settings) -> str:
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 repo_url,
-                headers={"X-API-Key": config.agent_arena_api_key}
+                headers={"X-API-Key": config.agentarena_api_key}
             )
             response.raise_for_status()
             

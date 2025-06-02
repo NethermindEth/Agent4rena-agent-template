@@ -29,6 +29,17 @@ def main():
     config = load_config()
     
     if args.mode == "server":
+        # Validate required fields for server mode
+        if not config.webhook_auth_token:
+            print("Error: WEBHOOK_AUTH_TOKEN is required for server mode")
+            print("Please set the WEBHOOK_AUTH_TOKEN environment variable or add it to your .env file")
+            sys.exit(1)
+        
+        if not config.agentarena_api_key:
+            print("Error: AGENTARENA_API_KEY is required for server mode")
+            print("Please set the AGENTARENA_API_KEY environment variable or add it to your .env file")
+            sys.exit(1)
+            
         start_server(host=args.host, port=args.port, config=config)
     elif args.mode == "local":
         if not args.repo:

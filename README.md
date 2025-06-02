@@ -57,7 +57,7 @@ To run the agent in server mode you need to:
     - Generate a webhook authorization token
     - Copy the AgentArena API key and Webhook Authorization Token and paste them in the `.env` file.
       ```
-      AGENT_ARENA_API_KEY=aa-...
+      AGENTARENA_API_KEY=aa-...
       WEBHOOK_AUTH_TOKEN=your_webhook_auth_token
       DATA_DIR=./data
       ```
@@ -80,7 +80,7 @@ Run the agent in local mode to audit a GitHub repository directly.
 You can use the following example repository to test out the agent. The results will be saved in JSON format in the specified output file, by default that is `audit.json`.
 
 ```bash
-audit-agent local --repo https://github.com/andreitoma8/learn-solidity-hacks.git --output audit.json
+audit-agent local --repo https://github.com/username/example_contract_repo.git --output audit.json
 ```
 
 This mode is useful for testing the agent or auditing repositories outside of the AgentArena platform.
