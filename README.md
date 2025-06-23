@@ -37,7 +37,7 @@ Create a `.env` file from `.env.example` and set the variables.
 ```
 # OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key
-OPENAI_MODEL=o3-mini
+OPENAI_MODEL=gpt-4.1-nano-2025-04-14
 
 # Logging
 LOG_LEVEL=INFO

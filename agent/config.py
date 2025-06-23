@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
     # Required fields for local mode
     openai_api_key: str = Field(..., env="OPENAI_API_KEY")
-    openai_model: str = Field("o3-mini", env="OPENAI_MODEL")
+    openai_model: str = Field("gpt-4.1-nano-2025-04-14", env="OPENAI_MODEL")
     log_level: str = Field("INFO", env="LOG_LEVEL")
     log_file: str = Field("agent.log", env="LOG_FILE")
     
